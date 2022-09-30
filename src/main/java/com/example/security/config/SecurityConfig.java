@@ -1,5 +1,7 @@
 package com.example.security.config;
 
+import com.example.security.config.oauth.PrincipalOauth2UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -14,6 +16,9 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @EnableWebSecurity // 활성화 : 여기에 작성하는 스프링 시큐리티 필터가 스프링 필터체인에 등록
 @EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
 public class SecurityConfig {
+
+    @Autowired
+    private PrincipalOauth2UserService principalOauth2UserService;
 
     @Bean
     public BCryptPasswordEncoder encodePassword() {
@@ -35,7 +40,10 @@ public class SecurityConfig {
                 .defaultSuccessUrl("/")
                 .and()
                 .oauth2Login()
-                .loginPage("/loginForm"); // 구글 로그인이 완료된 후 후처리 필요
+                .loginPage("/loginForm") // 구글 로그인이 완료된 후 후처리 필요
+                .userInfoEndpoint()
+                .userService(principalOauth2UserService)
+        ;
         return http.build();
     }
 }

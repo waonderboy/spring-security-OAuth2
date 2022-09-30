@@ -19,4 +19,7 @@ public class User {
     private String email;
     private String role;
     private LocalDateTime createdDate;
+
+    private String provider;
+    private String providerId;
 }
