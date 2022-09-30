@@ -1,5 +1,6 @@
 package com.example.security.domain;
 
+import lombok.Builder;
 import lombok.Data;
 
 import javax.persistence.Entity;
@@ -22,4 +23,20 @@ public class User {
 
     private String provider;
     private String providerId;
+
+    @Builder
+    public User(int id, String username, String password, String email, String role, LocalDateTime createdDate, String provider, String providerId) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.role = role;
+        this.createdDate = createdDate;
+        this.provider = provider;
+        this.providerId = providerId;
+    }
+
+    public User() {
+
+    }
 }
