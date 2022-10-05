@@ -3,6 +3,7 @@ package com.example.security.config.oauth;
 import com.example.security.config.auth.PrincipalDetails;
 import com.example.security.config.oauth.provider.FacebookUserInfo;
 import com.example.security.config.oauth.provider.GoogleUserInfo;
+import com.example.security.config.oauth.provider.NaverUserInfo;
 import com.example.security.config.oauth.provider.OAuth2UserInfo;
 import com.example.security.domain.User;
 import com.example.security.repository.UserRepository;
@@ -15,15 +16,18 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
+
 import static org.springframework.util.ObjectUtils.*;
 
 @Service
 @Slf4j
 public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
-
-    private BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+    private static final String PROVIDER_NAVER = "naver";
     private static final String PROVIDER_GOOGLE = "google";
     private static final String PROVIDER_FACEBOOK = "facebook";
+
+    private BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
 
     @Autowired
     private UserRepository userRepository;
@@ -35,8 +39,9 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
         log.info("userRequest.getClientRegistration={}", userRequest.getClientRegistration());
         log.info("userRequest.getAccessToken={}", userRequest.getAccessToken().getTokenValue());
         // 회원가입 강제로 진행
+        log.info("userRequest={}", userRequest);
         OAuth2User oAuth2User = super.loadUser(userRequest);
-
+        log.info("oAuth2User={}",oAuth2User);
         // 구글 로그인 버튼 -> 구글 로그인 창
         log.info("userRequest.getAttributes={}", oAuth2User.getAttributes());
 
@@ -46,6 +51,9 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
             oAuth2UserInfo = new GoogleUserInfo(oAuth2User.getAttributes());
         } else if(providerName.equals(PROVIDER_FACEBOOK)) {
             oAuth2UserInfo = new FacebookUserInfo(oAuth2User.getAttributes());
+        } else if(providerName.equals(PROVIDER_NAVER)) {
+            log.info("네이버 로그인 요청");
+            oAuth2UserInfo = new NaverUserInfo((Map)oAuth2User.getAttributes().get("response"));
         } else {
             throw new IllegalArgumentException("지원하지않는 Provider 입니다.");
         }
